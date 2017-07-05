@@ -1,5 +1,6 @@
 package com.github.vitalsoftware.logging
 
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.LayoutBase
 import org.specs2.mutable.Specification
@@ -9,16 +10,12 @@ import org.specs2.mutable.Specification
   */
 class SumoLogicAppenderTest extends Specification {
 
-  class EmptyLayout extends LayoutBase[ILoggingEvent] {
-    def doLayout(event: ILoggingEvent): String = ""
-  }
-
   "SumoLogicAppender" should {
 
     "Attempt connection" in {
       val appender = new SumoLogicAppender
       appender.setUrl("www.google.com")
-      appender.setLayout(new EmptyLayout)
+      appender.setEncoder(new PatternLayoutEncoder)
       appender.start() must not(throwA[Exception])
       appender.stop() must not(throwA[Exception])
     }

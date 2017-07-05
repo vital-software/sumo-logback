@@ -1,7 +1,8 @@
 package com.github.vitalsoftware.logging
 
 import ch.qos.logback.classic.spi.ILoggingEvent
-import ch.qos.logback.core.{AppenderBase, Layout}
+import ch.qos.logback.core.encoder.Encoder
+import ch.qos.logback.core.AppenderBase
 import com.sumologic.log4j.aggregation.SumoBufferFlusher
 import com.sumologic.log4j.http.{ProxySettings, SumoHttpSender}
 import com.sumologic.log4j.queue.{BufferWithFifoEviction, CostBoundedConcurrentQueue}
@@ -37,18 +38,18 @@ class SumoLogicAppender extends AppenderBase[ILoggingEvent] {
   protected val DEFAULT_MAX_QUEUE_SIZE_BYTES = 1000000L // Maximum message queue size (bytes)
 
   // Values set by XML configuration
-  protected var layout: Layout[ILoggingEvent] = null
-  def setLayout(layout: Layout[ILoggingEvent]) = this.layout = layout
+  protected var encoder: Encoder[ILoggingEvent] = _
+  def setEncoder(encoder: Encoder[ILoggingEvent]): Unit = this.encoder = encoder
   protected var sourceName: String = "sumo-logback-appender"
-  def setSourceName(sourceName: String) = this.sourceName = sourceName
-  protected var url: String = null
-  def setUrl(url: String) = this.url = url
+  def setSourceName(sourceName: String): Unit = this.sourceName = sourceName
+  protected var url: String = _
+  def setUrl(url: String): Unit = this.url = url
 
   // SumoLogic API
   protected lazy val queue = new BufferWithFifoEviction[String](DEFAULT_MAX_QUEUE_SIZE_BYTES,
-    new CostBoundedConcurrentQueue.CostAssigner[String]() { override def cost(e: String) = e.length.toLong })
+    new CostBoundedConcurrentQueue.CostAssigner[String]() { override def cost(e: String): Long = e.length.toLong })
 
-  protected lazy val sender = {
+  protected lazy val sender: SumoHttpSender = {
     val s = new SumoHttpSender
     s.setRetryInterval(DEFAULT_RETRY_INTERVAL)
     s.setConnectionTimeout(DEFAULT_CONNECTION_TIMEOUT)
@@ -68,12 +69,12 @@ class SumoLogicAppender extends AppenderBase[ILoggingEvent] {
     queue)
 
   // Logback API
-  override def start() = {
+  override def start(): Unit = {
     super.start()
     flusher.start()
   }
 
-  override def stop() = {
+  override def stop(): Unit = {
     super.stop()
     try {
       sender.close()
@@ -84,8 +85,8 @@ class SumoLogicAppender extends AppenderBase[ILoggingEvent] {
     }
   }
 
-  override def append(event: ILoggingEvent) = {
-    val message = layout.doLayout(event)
+  override def append(event: ILoggingEvent): Unit = {
+    val message = encoder.encode(event).toString
     try
       queue.add(message)
     catch {
