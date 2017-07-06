@@ -1,5 +1,7 @@
 package com.github.vitalsoftware.logging
 
+import java.nio.charset.StandardCharsets
+
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.encoder.Encoder
 import ch.qos.logback.core.AppenderBase
@@ -86,7 +88,7 @@ class SumoLogicAppender extends AppenderBase[ILoggingEvent] {
   }
 
   override def append(event: ILoggingEvent): Unit = {
-    val message = encoder.encode(event).toString
+    val message = new String(encoder.encode(event), StandardCharsets.UTF_8)
     try
       queue.add(message)
     catch {
