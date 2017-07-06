@@ -12,14 +12,14 @@ libraryDependencies += "com.github.vital-software" %% "sumo-logback" % "0.1-SNAP
 ```
 
 In your logback.xml file:
-{{{
+```
  <appender name="SumoAccess" class="com.github.vitalsoftware.logging.SumoLogicAppender">
    <url>[collector URL created on SumoLogic.com]</url>
    <encoder>
      <pattern>%date{yyyy-MM-dd HH:mm:ss,SSS Z} [%level] from %logger - %message%n%xException</pattern>
    </encoder>
  </appender>
-}}}
+```
 
 ## Dependencies
  - [Logback Core/Classic](https://logback.qos.ch)
