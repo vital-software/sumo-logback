@@ -8,18 +8,28 @@ Create a Logback compatible Appender for sending data to SumoLogic.com. This is 
 ```scala
 resolvers += Resolver.sonatypeRepo("releases")
 resolvers += Resolver.sonatypeRepo("snapshots")
-libraryDependencies += "com.github.vital-software" %% "sumo-logback" % "0.1-SNAPSHOT"
+libraryDependencies += "com.github.vital-software" %% "sumo-logback" % "0.2-SNAPSHOT"
 ```
 
 In your logback.xml file:
 ```
- <appender name="SumoAccess" class="com.github.vitalsoftware.logging.SumoLogicAppender">
+ <appender name="SUMOLOGBACK" class="com.github.vitalsoftware.logging.SumoLogicAppender">
    <url>[collector URL created on SumoLogic.com]</url>
    <encoder>
      <pattern>%date{yyyy-MM-dd HH:mm:ss,SSS Z} [%level] from %logger - %message%n%xException</pattern>
    </encoder>
  </appender>
+ 
+ <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+   <appender-ref ref="SUMOLOGBACK" />
+ </appender>
+ 
+ <root level="DEBUG">
+   <appender-ref ref="ASYNC" />
+ </root>
 ```
+
+Be sure to wrap your appender in an `AsyncAppender` so that log events do not block the current thread.
 
 ## Dependencies
  - [Logback Core/Classic](https://logback.qos.ch)

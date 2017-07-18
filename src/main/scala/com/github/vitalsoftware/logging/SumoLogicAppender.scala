@@ -4,7 +4,7 @@ import java.nio.charset.StandardCharsets
 
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.encoder.Encoder
-import ch.qos.logback.core.AsyncAppenderBase
+import ch.qos.logback.core.AppenderBase
 import com.sumologic.log4j.aggregation.SumoBufferFlusher
 import com.sumologic.log4j.http.{ProxySettings, SumoHttpSender}
 import com.sumologic.log4j.queue.{BufferWithFifoEviction, CostBoundedConcurrentQueue}
@@ -26,7 +26,7 @@ import org.slf4j.{Logger, LoggerFactory}
   *
   * Created by apatzer on 7/5/17.
   */
-class SumoLogicAppender extends AsyncAppenderBase[ILoggingEvent] {
+class SumoLogicAppender extends AppenderBase[ILoggingEvent] {
 
   val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
